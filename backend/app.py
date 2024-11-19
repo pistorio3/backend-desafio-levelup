@@ -4,7 +4,7 @@ import pandas as pd
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from backend.schemas import Of
+from backend.schemas import ListaOFs, quantidade
 
 app = FastAPI()
 
@@ -15,6 +15,7 @@ app = FastAPI()
     status_code=HTTPStatus.OK,
     summary='Lista todas as OFs',
     description='teste',
+    response_model=ListaOFs,
 )
 def lista_tudo():
     lista_linhas = []
@@ -61,10 +62,9 @@ def lista_tudo():
 
             lista_linhas.append(linha)
 
-    print('Linhas da planilha preenchidas:', len(lista_linhas))
-    print(lista_linhas)
-
-    return lista_linhas
+    quantidade = len(lista_linhas)
+    test = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return test
 
 
 # Endpoint de listagem de todas as OFs vinculadas com uma Chave C
@@ -73,7 +73,7 @@ def lista_tudo():
     status_code=HTTPStatus.OK,
     summary='Lista OFs vinculadas com uma Chave C',
     description='teste',
-    response_model=Of,
+    response_model=ListaOFs,
 )
 def lista_ofs_vinculadas():
     lista_linhas = []
@@ -84,8 +84,6 @@ def lista_ofs_vinculadas():
         'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
         sheet_name='2024-10',
     )
-
-    print('Linhas da planilha total:', len(df.index))
 
     df = df.reset_index()
     for index, row in df.iterrows():
@@ -125,9 +123,9 @@ def lista_ofs_vinculadas():
             lista_linhas.append(linha)
 
     print('Linhas da planilha preenchidas:', len(lista_linhas))
-    print(lista_linhas)
-
-    return lista_linhas
+    quantidade = len(lista_linhas)
+    test = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return test
 
 
 # Endpoint de listagem de todas as OFs não vinculadas com uma Chave C
@@ -136,7 +134,7 @@ def lista_ofs_vinculadas():
     status_code=HTTPStatus.OK,
     summary='Lista OFs não vinculadas com uma Chave C',
     description='teste',
-    response_model=Of,
+    response_model=ListaOFs,
 )
 def lista_ofs_nao_vinculadas():
     lista_linhas = []
@@ -187,15 +185,37 @@ def lista_ofs_nao_vinculadas():
 
             lista_linhas.append(linha)
 
-    print('Linhas da planilha preenchidas:', len(lista_linhas))
-    print(lista_linhas)
+    quantidade = len(lista_linhas)
+    test = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return test
 
-    return lista_linhas
 
+@app.get(
+    '/quantidade-ofs',
+    status_code=HTTPStatus.OK,
+    summary='Retorna a quantidade de OFs no mês',
+    description='teste',
+    response_model=quantidade,
+)
+def quantidade_ofs():
+    counter = 0
+    resp = {}
 
-@app.get('/hello-world', status_code=HTTPStatus.OK)
-def hello_world():
-    return {'message': 'Olá Mundo!'}
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    print('Linhas da planilha total:', len(df.index))
+
+    df = df.reset_index()
+    for index, row in df.iterrows():
+        if isinstance(row['Chave-C'], str):
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
 
 
 # OpenAPI configs
