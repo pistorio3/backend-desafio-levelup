@@ -23,6 +23,7 @@ lib64/
 parts/
 sdist/
 var/
+sheets/
 wheels/
 share/python-wheels/
 *.egg-info/
@@ -176,4 +177,5 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 
 # Generated using ignr.py - github.com/Antrikshy/ignr.py
-
+*.DS_Store
+.DS_Store

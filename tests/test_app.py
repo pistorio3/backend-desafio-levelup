@@ -8,7 +8,7 @@ from backend.app import app
 def test_root_deve_retornar_ok_e_ola_mundo():
     client = TestClient(app)
 
-    response = client.get('/')
+    response = client.get('/hello-world')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'Olá Mundo!'}
