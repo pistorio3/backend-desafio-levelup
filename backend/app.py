@@ -4,11 +4,18 @@ import pandas as pd
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
+from backend.schemas import Of
+
 app = FastAPI()
 
 
-# Endpoint de listagem das OFs
-@app.get('/lista-tudo', status_code=HTTPStatus.OK)
+# Endpoint de listagem de todas as OFs
+@app.get(
+    '/lista-tudo',
+    status_code=HTTPStatus.OK,
+    summary='Lista todas as OFs',
+    description='teste',
+)
 def lista_tudo():
     lista_linhas = []
     linha = {}
@@ -60,11 +67,138 @@ def lista_tudo():
     return lista_linhas
 
 
+# Endpoint de listagem de todas as OFs vinculadas com uma Chave C
+@app.get(
+    '/lista-vinculadas',
+    status_code=HTTPStatus.OK,
+    summary='Lista OFs vinculadas com uma Chave C',
+    description='teste',
+    response_model=Of,
+)
+def lista_ofs_vinculadas():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    print('Linhas da planilha total:', len(df.index))
+
+    df = df.reset_index()
+    for index, row in df.iterrows():
+        if (
+            isinstance(row['Chave-C vinculada'], str)
+            and row['Chave-C vinculada'] == 'Sim'
+            or row['Chave-C vinculada'] == 'sim'
+        ):
+            linha = {
+                'Chave-C': row['Chave-C'],
+                'Nome': row['Nome'],
+                'E-mail': row['E-mail'],
+                'Matricula': row['Matricula'],
+                'Service Line': row['Service Line'],
+                'W# Forecast': row['W# Forecast'],
+                'Acionamento OF': row['Acionamento OF'],
+                'OF': row['OF'],
+                'OF Grupo/Workitem': row['OF Grupo/Workitem'],
+                'Chave-C vinculada': row['Chave-C vinculada'],
+                'Perfil OF': row['Perfil OF'],
+                'GECAP': row['GECAP'],
+                'Form': row['Form'],
+                'Forecast USTIBB': row['Forecast USTIBB'],
+                'Forecast R$': row['Forecast R$'],
+                'USTIBBs OF ATUAL': row['USTIBBs OF ATUAL'],
+                'DELTA USTIBBs': row['DELTA USTIBBs'],
+                'DELTA R$ Forecast': row['DELTA R$ Forecast'],
+                'DPE': row['DPE'],
+                'Gerente Equip. - BB': row['Gerente Equip. - BB'],
+                'RT - BB': row['RT - BB'],
+                'Férias/Afastamentos/Observações': row[
+                    'Férias/Afastamentos/Observações'
+                ],
+                'On-board': format(row['On-board'], '%d/%m/%Y'),
+            }
+
+            lista_linhas.append(linha)
+
+    print('Linhas da planilha preenchidas:', len(lista_linhas))
+    print(lista_linhas)
+
+    return lista_linhas
+
+
+# Endpoint de listagem de todas as OFs não vinculadas com uma Chave C
+@app.get(
+    '/lista-nao-vinculadas',
+    status_code=HTTPStatus.OK,
+    summary='Lista OFs não vinculadas com uma Chave C',
+    description='teste',
+    response_model=Of,
+)
+def lista_ofs_nao_vinculadas():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    print('Linhas da planilha total:', len(df.index))
+
+    df = df.reset_index()
+    for index, row in df.iterrows():
+        if (
+            isinstance(row['Chave-C vinculada'], str)
+            and row['Chave-C vinculada'] == 'Não'
+            or row['Chave-C vinculada'] == 'não'
+        ):
+            linha = {
+                'Chave-C': row['Chave-C'],
+                'Nome': row['Nome'],
+                'E-mail': row['E-mail'],
+                'Matricula': row['Matricula'],
+                'Service Line': row['Service Line'],
+                'W# Forecast': row['W# Forecast'],
+                'Acionamento OF': row['Acionamento OF'],
+                'OF': row['OF'],
+                'OF Grupo/Workitem': row['OF Grupo/Workitem'],
+                'Chave-C vinculada': row['Chave-C vinculada'],
+                'Perfil OF': row['Perfil OF'],
+                'GECAP': row['GECAP'],
+                'Form': row['Form'],
+                'Forecast USTIBB': row['Forecast USTIBB'],
+                'Forecast R$': row['Forecast R$'],
+                'USTIBBs OF ATUAL': row['USTIBBs OF ATUAL'],
+                'DELTA USTIBBs': row['DELTA USTIBBs'],
+                'DELTA R$ Forecast': row['DELTA R$ Forecast'],
+                'DPE': row['DPE'],
+                'Gerente Equip. - BB': row['Gerente Equip. - BB'],
+                'RT - BB': row['RT - BB'],
+                'Férias/Afastamentos/Observações': row[
+                    'Férias/Afastamentos/Observações'
+                ],
+                'On-board': format(row['On-board'], '%d/%m/%Y'),
+            }
+
+            lista_linhas.append(linha)
+
+    print('Linhas da planilha preenchidas:', len(lista_linhas))
+    print(lista_linhas)
+
+    return lista_linhas
+
+
 @app.get('/hello-world', status_code=HTTPStatus.OK)
-def read_root():
+def hello_world():
     return {'message': 'Olá Mundo!'}
 
 
+# OpenAPI configs
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -83,4 +217,3 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
-
