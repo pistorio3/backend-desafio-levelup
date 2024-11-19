@@ -11,9 +11,9 @@ app = FastAPI()
 
 # Endpoint de listagem de todas as OFs
 @app.get(
-    '/lista-tudo',
+    '/ofs/lista-tudo',
     status_code=HTTPStatus.OK,
-    summary='Lista todas as OFs',
+    summary='Lista todas as OFs do mês',
     description='teste',
     response_model=ListaOFs,
 )
@@ -69,9 +69,9 @@ def lista_tudo():
 
 # Endpoint de listagem de todas as OFs vinculadas com uma Chave C
 @app.get(
-    '/lista-vinculadas',
+    '/ofs/lista-vinculadas',
     status_code=HTTPStatus.OK,
-    summary='Lista OFs vinculadas com uma Chave C',
+    summary='Lista de OFs vinculadas com uma Chave C',
     description='teste',
     response_model=ListaOFs,
 )
@@ -130,9 +130,9 @@ def lista_ofs_vinculadas():
 
 # Endpoint de listagem de todas as OFs não vinculadas com uma Chave C
 @app.get(
-    '/lista-nao-vinculadas',
+    '/ofs/lista-nao-vinculadas',
     status_code=HTTPStatus.OK,
-    summary='Lista OFs não vinculadas com uma Chave C',
+    summary='Lista de OFs não vinculadas com uma Chave C',
     description='teste',
     response_model=ListaOFs,
 )
@@ -191,9 +191,9 @@ def lista_ofs_nao_vinculadas():
 
 
 @app.get(
-    '/quantidade-ofs',
+    '/ofs/quantidade-total-mes',
     status_code=HTTPStatus.OK,
-    summary='Retorna a quantidade de OFs no mês',
+    summary='Retorna a quantidade total de OFs no mês',
     description='teste',
     response_model=quantidade,
 )
