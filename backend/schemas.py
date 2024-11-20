@@ -8,5 +8,5 @@ class ListaOFs(BaseModel):
     quantidade: int
 
 
-class quantidade(BaseModel):
+class Quantidade(BaseModel):
     quantidade: int

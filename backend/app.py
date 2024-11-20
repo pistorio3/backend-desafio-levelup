@@ -4,7 +4,7 @@ import pandas as pd
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from backend.schemas import ListaOFs, quantidade
+from backend.schemas import ListaOFs, Quantidade
 
 tags_metadata = [
     {'name': 'Listas'},
@@ -27,17 +27,18 @@ def lista_tudo():
     lista_linhas = []
     linha = {}
 
-    # lendo planilha
+    # Lendo planilha
     df = pd.read_excel(
         'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
         sheet_name='2024-10',
     )
 
-    print('Linhas da planilha total:', len(df.index))
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
 
     df = df.reset_index()
     for index, row in df.iterrows():
-        if isinstance(row['Chave-C'], str):
+        if isinstance(row['OF'], int) or isinstance(row['OF'], float) and not isinstance(row['OF'], str):
             linha = {
                 'Chave-C': row['Chave-C'],
                 'Nome': row['Nome'],
@@ -61,14 +62,14 @@ def lista_tudo():
                 'Gerente Equip. - BB': row['Gerente Equip. - BB'],
                 'RT - BB': row['RT - BB'],
                 'Férias/Afastamentos/Observações': row['Férias/Afastamentos/Observações'],
-                'On-board': format(row['On-board'], '%d/%m/%Y'),
+                'On-board': format(row['On-board'], '%d/%m/%y'),
             }
 
             lista_linhas.append(linha)
 
     quantidade = len(lista_linhas)
-    test = {'resposta': lista_linhas, 'quantidade': quantidade}
-    return test
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
 
 
 # Endpoint de listagem de todas as OFs vinculadas com uma Chave C
@@ -84,11 +85,14 @@ def lista_ofs_vinculadas():
     lista_linhas = []
     linha = {}
 
-    # lendo planilha
+    # Lendo planilha
     df = pd.read_excel(
         'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
         sheet_name='2024-10',
     )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
 
     df = df.reset_index()
     for index, row in df.iterrows():
@@ -123,8 +127,8 @@ def lista_ofs_vinculadas():
 
     print('Linhas da planilha preenchidas:', len(lista_linhas))
     quantidade = len(lista_linhas)
-    test = {'resposta': lista_linhas, 'quantidade': quantidade}
-    return test
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
 
 
 # Endpoint de listagem de todas as OFs não vinculadas com uma Chave C
@@ -145,6 +149,9 @@ def lista_ofs_nao_vinculadas():
         'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
         sheet_name='2024-10',
     )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
 
     print('Linhas da planilha total:', len(df.index))
 
@@ -180,8 +187,8 @@ def lista_ofs_nao_vinculadas():
             lista_linhas.append(linha)
 
     quantidade = len(lista_linhas)
-    test = {'resposta': lista_linhas, 'quantidade': quantidade}
-    return test
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
 
 
 @app.get(
@@ -189,22 +196,25 @@ def lista_ofs_nao_vinculadas():
     status_code=HTTPStatus.OK,
     summary='Retorna a quantidade total de OFs no mês',
     description='teste',
-    response_model=quantidade,
+    response_model=Quantidade,
     tags=['Quantidades'],
 )
 def quantidade_ofs():
     counter = 0
     resp = {}
 
-    # lendo planilha
+    # Lendo planilha
     df = pd.read_excel(
         'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
         sheet_name='2024-10',
     )
 
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+
     df = df.reset_index()
     for index, row in df.iterrows():
-        if isinstance(row['Chave-C'], str):
+        if isinstance(row['OF'], float):
             counter += 1
 
     resp = {'quantidade': counter}
