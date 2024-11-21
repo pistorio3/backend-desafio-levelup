@@ -190,16 +190,16 @@ def lista_ofs_nao_vinculadas():
     resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
     return resposta
 
-
+# Endpoint que retorna a quantidade total de OFs 
 @app.get(
-    '/ofs/quantidade-total-mes',
+    '/ofs/quantidade-total',
     status_code=HTTPStatus.OK,
     summary='Retorna a quantidade total de OFs no mês',
     description='teste',
     response_model=Quantidade,
     tags=['Quantidades'],
 )
-def quantidade_ofs():
+def quantidade_ofs_total():
     counter = 0
     resp = {}
 
@@ -220,6 +220,65 @@ def quantidade_ofs():
     resp = {'quantidade': counter}
     return resp
 
+# Endpoint que retorna a quantidade de OFs vinculadas 
+@app.get(
+    '/ofs/quantidade-vinculadas',
+    status_code=HTTPStatus.OK,
+    summary='Retorna a quantidade total de OFs vinculadas com uma Chave-C',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades'],
+)
+def quantidade_ofs_vinculadas():
+    counter = 0
+    resp = {}
+
+    # Lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+
+    df = df.reset_index()
+    for index, row in df.iterrows():
+         if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Sim' or row['Chave-C vinculada'] == 'sim':
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs não vinculadas 
+@app.get(
+    '/ofs/quantidade-nao-vinculadas',
+    status_code=HTTPStatus.OK,
+    summary='Retorna a quantidade total de OFs não vinculadas com uma Chave-C',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades'],
+)
+def quantidade_ofs_vinculadas():
+    counter = 0
+    resp = {}
+
+    # Lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+
+    df = df.reset_index()
+    for index, row in df.iterrows():
+         if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Não' or row['Chave-C vinculada'] == 'não':
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
 
 # OpenAPI configs
 def custom_openapi():
