@@ -6,7 +6,7 @@ from fastapi.openapi.utils import get_openapi
 
 from backend.schemas import ListaOFs, Quantidade
 
-tags_metadata = [{'name': 'Listas'}, {'name': 'Quantidades'}, {'name': 'Estado OF'}]
+tags_metadata = [{'name': 'Listas'}, {'name': 'Quantidades'}, {'name': 'Estado OF'}, {'name': 'Quantidades Estados OFs'}]
 
 app = FastAPI(openapi_tags=tags_metadata)
 
@@ -43,7 +43,7 @@ estados_of = {
     'perfil-incluido': 'Perfil Incluido',
     'perfil-iniciada': 'Entrega Perfil Iniciada',
     'perfil-efetivada': 'Entrega Perfil Efetivada',
-    'perfil-validada': 'Entrega do perfil validada',
+    'perfil-validada': 'Entrega Perfil Validada',
     'validada-gerente': 'Validada pelo Gerente',
     'rof-gerado': 'Rof Gerado',
 }
@@ -107,7 +107,7 @@ def lista_ofs_vinculadas():
     df = df.reset_index()
 
     for index, row in df.iterrows():
-        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Sim' or row['Chave-C vinculada'] == 'sim':
+        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'].upper() == 'SIM':
             for i in range(len(chaves)):
                 linha[chaves[i]] = row[chaves[i]]
             lista_linhas.append(linha)
@@ -141,7 +141,7 @@ def lista_ofs_nao_vinculadas():
     df = df.reset_index()
 
     for index, row in df.iterrows():
-        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Não' or row['Chave-C vinculada'] == 'não':
+        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'].upper() == 'NÃO':
             for i in range(len(chaves)):
                 linha[chaves[i]] = row[chaves[i]]
             lista_linhas.append(linha)
@@ -237,7 +237,7 @@ def quantidade_ofs_nao_vinculadas():
     df = df.reset_index()
 
     for index, row in df.iterrows():
-        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'].UPPER() == 'NÃO':
+        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'].upper() == 'NÃO':
             counter += 1
 
     resp = {'quantidade': counter}
@@ -345,6 +345,406 @@ def lista_ofs_perfil_efetivada():
     resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
     return resposta
 
+
+# Endpoint que retorna a lista de OFs com estado de (Entrega de Perfil Validada)
+@app.get(
+    '/ofs/estado/entrega-perfil-validada',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Entrega de Perfil Validada)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_perfil_validada():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-validada'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+
+# Endpoint que retorna a lista de OFs com estado de (Validada pelo gerente)
+@app.get(
+    '/ofs/estado/validada-gerente',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Validada pelo gerente)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_validada_gerente():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['validada-gerente'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+# Endpoint que retorna a lista de OFs com estado de (Cancelada)
+@app.get(
+    '/ofs/estado/cancelada',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Cancelada)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_validada_gerente():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['cancelada'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+# Endpoint que retorna a lista de OFs com estado de (Cancelada por fiscal de contrato)
+@app.get(
+    '/ofs/estado/cancelada-fiscal',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Cancelada por fiscal de contrato)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_cancelada_fiscal():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['cancelada-fiscal'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+
+# Endpoint que retorna a lista de OFs com estado de (Rof Gerado)
+@app.get(
+    '/ofs/estado/rof-gerado',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Rof Gerado)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_rof_gerado():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['rof-gerado'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+
+# Endpoint que retorna a quantidade de OFs com estado de (Perfil Incluido)
+@app.get(
+    '/ofs/estado/quantidade/perfil-incluido',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Perfil Incluido)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-incluido'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Entrega Perfil Iniciada)
+@app.get(
+    '/ofs/estado/quantidade/entrega-perfil-iniciada',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Entrega Perfil Iniciada)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-iniciada'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Entrega Perfil Efetivada)
+@app.get(
+    '/ofs/estado/quantidade/entrega-perfil-efetivada',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Entrega Perfil Efetivada)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-efetivada'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Entrega Perfil Validada)
+@app.get(
+    '/ofs/estado/quantidade/entrega-perfil-validada',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Entrega Perfil Validada)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-validada'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Validada pelo Gerente)
+@app.get(
+    '/ofs/estado/quantidade/validada-gerente',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Validada pelo Gerente)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['validada-gerente'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Cancelada)
+@app.get(
+    '/ofs/estado/quantidade/cancelada',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Cancelada)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['cancelada'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Cancelada por fiscal de contrato)
+@app.get(
+    '/ofs/estado/quantidade/cancelada-fiscal-contrato',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Cancelada por fiscal de contrato)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['cancelada-fiscal'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
+
+# Endpoint que retorna a quantidade de OFs com estado de (Rof Gerado)
+@app.get(
+    '/ofs/estado/quantidade/rof-gerado',
+    status_code=HTTPStatus.OK,
+    summary='Quantidade de OFs com estado de (Rof Gerado)',
+    description='teste',
+    response_model=Quantidade,
+    tags=['Quantidades Estados OFs'],
+)
+def quantidade_ofs_perfil_incluido():
+    counter = 0
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['rof-gerado'].upper():
+            counter += 1
+
+    resp = {'quantidade': counter}
+    return resp
 
 # OpenAPI configs
 def custom_openapi():
