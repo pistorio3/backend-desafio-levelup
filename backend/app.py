@@ -6,12 +6,47 @@ from fastapi.openapi.utils import get_openapi
 
 from backend.schemas import ListaOFs, Quantidade
 
-tags_metadata = [
-    {'name': 'Listas'},
-    {'name': 'Quantidades'},
-]
+tags_metadata = [{'name': 'Listas'}, {'name': 'Quantidades'}, {'name': 'Estado OF'}]
 
 app = FastAPI(openapi_tags=tags_metadata)
+
+chaves = [
+    'Chave-C',
+    'Nome',
+    'E-mail',
+    'Matricula',
+    'Service Line',
+    'W# Forecast',
+    'Acionamento OF',
+    'OF',
+    'OF Grupo/Workitem',
+    'Chave-C vinculada',
+    'Perfil OF',
+    'Estado OF',
+    'GECAP',
+    'Form',
+    'Forecast USTIBB',
+    'Forecast R$',
+    'USTIBBs OF ATUAL',
+    'DELTA USTIBBs',
+    'DELTA R$ Forecast',
+    'DPE',
+    'Gerente Equip. - BB',
+    'RT - BB',
+    'Férias/Afastamentos/Observações',
+    'On-board',
+]
+
+estados_of = {
+    'cancelada': 'Cancelada',
+    'cancelada-fiscal': 'Cancelada por fiscal de contrato',
+    'perfil-incluido': 'Perfil Incluido',
+    'perfil-iniciada': 'Entrega Perfil Iniciada',
+    'perfil-efetivada': 'Entrega Perfil Efetivada',
+    'perfil-validada': 'Entrega do perfil validada',
+    'validada-gerente': 'Validada pelo Gerente',
+    'rof-gerado': 'Rof Gerado',
+}
 
 
 # Endpoint de listagem de todas as OFs
@@ -35,36 +70,12 @@ def lista_tudo():
 
     # Limpando Dataframe de linhas vazias
     df = df.dropna(thresh=15)
-
     df = df.reset_index()
+
     for index, row in df.iterrows():
         if isinstance(row['OF'], int) or isinstance(row['OF'], float) and not isinstance(row['OF'], str):
-            linha = {
-                'Chave-C': row['Chave-C'],
-                'Nome': row['Nome'],
-                'E-mail': row['E-mail'],
-                'Matricula': row['Matricula'],
-                'Service Line': row['Service Line'],
-                'W# Forecast': row['W# Forecast'],
-                'Acionamento OF': row['Acionamento OF'],
-                'OF': row['OF'],
-                'OF Grupo/Workitem': row['OF Grupo/Workitem'],
-                'Chave-C vinculada': row['Chave-C vinculada'],
-                'Perfil OF': row['Perfil OF'],
-                'GECAP': row['GECAP'],
-                'Form': row['Form'],
-                'Forecast USTIBB': row['Forecast USTIBB'],
-                'Forecast R$': row['Forecast R$'],
-                'USTIBBs OF ATUAL': row['USTIBBs OF ATUAL'],
-                'DELTA USTIBBs': row['DELTA USTIBBs'],
-                'DELTA R$ Forecast': row['DELTA R$ Forecast'],
-                'DPE': row['DPE'],
-                'Gerente Equip. - BB': row['Gerente Equip. - BB'],
-                'RT - BB': row['RT - BB'],
-                'Férias/Afastamentos/Observações': row['Férias/Afastamentos/Observações'],
-                'On-board': format(row['On-board'], '%d/%m/%y'),
-            }
-
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
             lista_linhas.append(linha)
 
     quantidade = len(lista_linhas)
@@ -93,39 +104,14 @@ def lista_ofs_vinculadas():
 
     # Limpando Dataframe de linhas vazias
     df = df.dropna(thresh=15)
-
     df = df.reset_index()
+
     for index, row in df.iterrows():
         if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Sim' or row['Chave-C vinculada'] == 'sim':
-            linha = {
-                'Chave-C': row['Chave-C'],
-                'Nome': row['Nome'],
-                'E-mail': row['E-mail'],
-                'Matricula': row['Matricula'],
-                'Service Line': row['Service Line'],
-                'W# Forecast': row['W# Forecast'],
-                'Acionamento OF': row['Acionamento OF'],
-                'OF': row['OF'],
-                'OF Grupo/Workitem': row['OF Grupo/Workitem'],
-                'Chave-C vinculada': row['Chave-C vinculada'],
-                'Perfil OF': row['Perfil OF'],
-                'GECAP': row['GECAP'],
-                'Form': row['Form'],
-                'Forecast USTIBB': row['Forecast USTIBB'],
-                'Forecast R$': row['Forecast R$'],
-                'USTIBBs OF ATUAL': row['USTIBBs OF ATUAL'],
-                'DELTA USTIBBs': row['DELTA USTIBBs'],
-                'DELTA R$ Forecast': row['DELTA R$ Forecast'],
-                'DPE': row['DPE'],
-                'Gerente Equip. - BB': row['Gerente Equip. - BB'],
-                'RT - BB': row['RT - BB'],
-                'Férias/Afastamentos/Observações': row['Férias/Afastamentos/Observações'],
-                'On-board': format(row['On-board'], '%d/%m/%Y'),
-            }
-
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
             lista_linhas.append(linha)
 
-    print('Linhas da planilha preenchidas:', len(lista_linhas))
     quantidade = len(lista_linhas)
     resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
     return resposta
@@ -152,45 +138,20 @@ def lista_ofs_nao_vinculadas():
 
     # Limpando Dataframe de linhas vazias
     df = df.dropna(thresh=15)
-
-    print('Linhas da planilha total:', len(df.index))
-
     df = df.reset_index()
+
     for index, row in df.iterrows():
         if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Não' or row['Chave-C vinculada'] == 'não':
-            linha = {
-                'Chave-C': row['Chave-C'],
-                'Nome': row['Nome'],
-                'E-mail': row['E-mail'],
-                'Matricula': row['Matricula'],
-                'Service Line': row['Service Line'],
-                'W# Forecast': row['W# Forecast'],
-                'Acionamento OF': row['Acionamento OF'],
-                'OF': row['OF'],
-                'OF Grupo/Workitem': row['OF Grupo/Workitem'],
-                'Chave-C vinculada': row['Chave-C vinculada'],
-                'Perfil OF': row['Perfil OF'],
-                'GECAP': row['GECAP'],
-                'Form': row['Form'],
-                'Forecast USTIBB': row['Forecast USTIBB'],
-                'Forecast R$': row['Forecast R$'],
-                'USTIBBs OF ATUAL': row['USTIBBs OF ATUAL'],
-                'DELTA USTIBBs': row['DELTA USTIBBs'],
-                'DELTA R$ Forecast': row['DELTA R$ Forecast'],
-                'DPE': row['DPE'],
-                'Gerente Equip. - BB': row['Gerente Equip. - BB'],
-                'RT - BB': row['RT - BB'],
-                'Férias/Afastamentos/Observações': row['Férias/Afastamentos/Observações'],
-                'On-board': format(row['On-board'], '%d/%m/%Y'),
-            }
-
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
             lista_linhas.append(linha)
 
     quantidade = len(lista_linhas)
     resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
     return resposta
 
-# Endpoint que retorna a quantidade total de OFs 
+
+# Endpoint que retorna a quantidade total de OFs
 @app.get(
     '/ofs/quantidade-total',
     status_code=HTTPStatus.OK,
@@ -211,8 +172,8 @@ def quantidade_ofs_total():
 
     # Limpando Dataframe de linhas vazias
     df = df.dropna(thresh=15)
-
     df = df.reset_index()
+
     for index, row in df.iterrows():
         if isinstance(row['OF'], float):
             counter += 1
@@ -220,7 +181,8 @@ def quantidade_ofs_total():
     resp = {'quantidade': counter}
     return resp
 
-# Endpoint que retorna a quantidade de OFs vinculadas 
+
+# Endpoint que retorna a quantidade de OFs vinculadas
 @app.get(
     '/ofs/quantidade-vinculadas',
     status_code=HTTPStatus.OK,
@@ -241,16 +203,17 @@ def quantidade_ofs_vinculadas():
 
     # Limpando Dataframe de linhas vazias
     df = df.dropna(thresh=15)
-
     df = df.reset_index()
+
     for index, row in df.iterrows():
-         if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Sim' or row['Chave-C vinculada'] == 'sim':
+        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'].upper() == 'SIM':
             counter += 1
 
     resp = {'quantidade': counter}
     return resp
 
-# Endpoint que retorna a quantidade de OFs não vinculadas 
+
+# Endpoint que retorna a quantidade de OFs não vinculadas
 @app.get(
     '/ofs/quantidade-nao-vinculadas',
     status_code=HTTPStatus.OK,
@@ -259,7 +222,7 @@ def quantidade_ofs_vinculadas():
     response_model=Quantidade,
     tags=['Quantidades'],
 )
-def quantidade_ofs_vinculadas():
+def quantidade_ofs_nao_vinculadas():
     counter = 0
     resp = {}
 
@@ -271,14 +234,117 @@ def quantidade_ofs_vinculadas():
 
     # Limpando Dataframe de linhas vazias
     df = df.dropna(thresh=15)
-
     df = df.reset_index()
+
     for index, row in df.iterrows():
-         if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'] == 'Não' or row['Chave-C vinculada'] == 'não':
+        if isinstance(row['Chave-C vinculada'], str) and row['Chave-C vinculada'].UPPER() == 'NÃO':
             counter += 1
 
     resp = {'quantidade': counter}
     return resp
+
+
+# Endpoint que retorna a lista de OFs com estado de (Perfil Incluido)
+@app.get(
+    '/ofs/estado/perfil-incluido',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Perfil Incluido)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_perfil_incluido():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-incluido'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+
+# Endpoint que retorna a lista de OFs com estado de (Entrega de Perfil Iniciado)
+@app.get(
+    '/ofs/estado/entrega-perfil-iniciada',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Entrega de Perfil Iniciado)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_perfil_iniciada():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-iniciada'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
+
+# Endpoint que retorna a lista de OFs com estado de (Entrega de Perfil Efetivada)
+@app.get(
+    '/ofs/estado/entrega-perfil-efetivada',
+    status_code=HTTPStatus.OK,
+    summary='Lista de OFs com estado de (Entrega de Perfil Efetivada)',
+    description='teste',
+    response_model=ListaOFs,
+    tags=['Estado OF'],
+)
+def lista_ofs_perfil_efetivada():
+    lista_linhas = []
+    linha = {}
+
+    # lendo planilha
+    df = pd.read_excel(
+        'backend/sheets/2024 - Controle de OF - Amostra.xlsm',
+        sheet_name='2024-10',
+    )
+
+    # Limpando Dataframe de linhas vazias
+    df = df.dropna(thresh=15)
+    df = df.reset_index()
+
+    for index, row in df.iterrows():
+        if isinstance(row['Estado OF'], str) and row['Estado OF'].upper() == estados_of['perfil-efetivada'].upper():
+            for i in range(len(chaves)):
+                linha[chaves[i]] = row[chaves[i]]
+            lista_linhas.append(linha)
+
+    quantidade = len(lista_linhas)
+    resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
+    return resposta
+
 
 # OpenAPI configs
 def custom_openapi():
@@ -288,7 +354,7 @@ def custom_openapi():
         title='Backend Desafio - Level Up',
         version='1.0.0',
         summary='API em python para prover dados, utilizando o FastAPI',
-        description='Utiliza como base dedados as planilhas excel/csv utilizadas no fluxo de trabalho de acompanhamento das OFs - Documentação via SwaggerUI e Redoc',
+        description='Utiliza como base de dados as planilhas excel/csv utilizadas no fluxo de trabalho de acompanhamento das OFs - Documentação via SwaggerUI e Redoc',
         routes=app.routes,
     )
     openapi_schema['info']['x-logo'] = {'url': 'https://www.ibm.com/brand/experience-guides/developer/b1db1ae501d522a1a4b49613fe07c9f1/01_8-bar-positive.svg'}
