@@ -2,7 +2,7 @@
 name = "backend"
 version = "0.1.0"
 description = ""
-authors = ["C1330175 Joao Victor Pistorio Martins <c1330175@interno.bb.com.br>"]
+authors = ["Joao Victor Pistorio Martins"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
