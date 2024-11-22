@@ -2,7 +2,7 @@
 name = "backend"
 version = "0.1.0"
 description = ""
-authors = ["C1330175 Joao Victor Pistorio Martins <c1330175@interno.bb.com.br>"]
+authors = ["Joao Victor Pistorio Martins"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -13,7 +13,7 @@ fastapi = { extras = ["standard"], version = "^0.115.5" }
 pytest = "^8.3.3"
 pytest-cov = "^6.0.0"
 taskipy = "^1.14.0"
-ruff = "^0.7.4"
+ruff = "^0.8.0"
 
 [build-system]
 requires = ["poetry-core"]

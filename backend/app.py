@@ -413,6 +413,7 @@ def lista_ofs_validada_gerente():
     resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
     return resposta
 
+
 # Endpoint que retorna a lista de OFs com estado de (Cancelada)
 @app.get(
     '/ofs/estado/cancelada',
@@ -422,7 +423,7 @@ def lista_ofs_validada_gerente():
     response_model=ListaOFs,
     tags=['Estado OF'],
 )
-def lista_ofs_validada_gerente():
+def lista_ofs_cancelada():
     lista_linhas = []
     linha = {}
 
@@ -445,6 +446,7 @@ def lista_ofs_validada_gerente():
     quantidade = len(lista_linhas)
     resposta = {'resposta': lista_linhas, 'quantidade': quantidade}
     return resposta
+
 
 # Endpoint que retorna a lista de OFs com estado de (Cancelada por fiscal de contrato)
 @app.get(
@@ -543,6 +545,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Entrega Perfil Iniciada)
 @app.get(
     '/ofs/estado/quantidade/entrega-perfil-iniciada',
@@ -552,7 +555,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_perfil_iniciada():
     counter = 0
 
     # lendo planilha
@@ -572,6 +575,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Entrega Perfil Efetivada)
 @app.get(
     '/ofs/estado/quantidade/entrega-perfil-efetivada',
@@ -581,7 +585,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_perfil_efetivada():
     counter = 0
 
     # lendo planilha
@@ -601,6 +605,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Entrega Perfil Validada)
 @app.get(
     '/ofs/estado/quantidade/entrega-perfil-validada',
@@ -610,7 +615,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_perfil_validada():
     counter = 0
 
     # lendo planilha
@@ -630,6 +635,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Validada pelo Gerente)
 @app.get(
     '/ofs/estado/quantidade/validada-gerente',
@@ -639,7 +645,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_validada_gerente():
     counter = 0
 
     # lendo planilha
@@ -659,6 +665,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Cancelada)
 @app.get(
     '/ofs/estado/quantidade/cancelada',
@@ -668,7 +675,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_cancelada():
     counter = 0
 
     # lendo planilha
@@ -688,6 +695,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Cancelada por fiscal de contrato)
 @app.get(
     '/ofs/estado/quantidade/cancelada-fiscal-contrato',
@@ -697,7 +705,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_cancelada_fiscal():
     counter = 0
 
     # lendo planilha
@@ -717,6 +725,7 @@ def quantidade_ofs_perfil_incluido():
     resp = {'quantidade': counter}
     return resp
 
+
 # Endpoint que retorna a quantidade de OFs com estado de (Rof Gerado)
 @app.get(
     '/ofs/estado/quantidade/rof-gerado',
@@ -726,7 +735,7 @@ def quantidade_ofs_perfil_incluido():
     response_model=Quantidade,
     tags=['Quantidades Estados OFs'],
 )
-def quantidade_ofs_perfil_incluido():
+def quantidade_ofs_rof_gerado():
     counter = 0
 
     # lendo planilha
@@ -745,6 +754,7 @@ def quantidade_ofs_perfil_incluido():
 
     resp = {'quantidade': counter}
     return resp
+
 
 # OpenAPI configs
 def custom_openapi():
